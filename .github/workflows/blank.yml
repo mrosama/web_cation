@@ -38,5 +38,13 @@ jobs:
       - name: print list file
         run: ls
       
-      - name: compress file
-        run: tar -czf "${{github.sha}}".tar.gz --exclude=*.git --exclude=images *
+      - name: Create Debloyment artifact
+        env:
+          GITHUB_SHA: ${{github.sha}}
+        run: tar -czf "${GITHUB_SHA}".tar.gz --exclude=*.git --exclude=images *
+      
+      - name: store artifact for distribution
+        uses: actions/upload-artifact@v2
+         with:
+          name: app.build
+          path: ${{github.sha}}.tar.gz
