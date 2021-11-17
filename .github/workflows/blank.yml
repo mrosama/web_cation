@@ -54,18 +54,17 @@ jobs:
           path: ${{github.sha}}.tar.gz
 
     
-      - name: Create Release using github
-        id: create_release_github
+       name: Create Release
+        id: create_release
         uses: zendesk/action-create-release@v1
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # This token is provided by Actions, you do not need to create your own token
         with:
-          tag_name: Tags-${{ github.ref }}
-          release_name: Releases- ${{ github.ref }}
+          tag_name: ${{ github.ref }}
+          release_name: Release ${{ github.ref }}
           body: |
             Changes in this Release
             - First Change
             - Second Change
           draft: false
-          prerelease: true
-          tag_schema: semantic
+          prerelease: false
