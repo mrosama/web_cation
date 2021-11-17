@@ -85,8 +85,8 @@ jobs:
             - First Change
             - Second Change
     
-      - name: Create Release 2
-        id: create_release
+      - name: Create Release using github
+        id: create_release_github
         uses: zendesk/action-create-release@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
