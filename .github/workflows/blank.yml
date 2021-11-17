@@ -67,7 +67,7 @@ jobs:
         with:
           allow_duplicate: true
           tag_name: Stage-${{ github.ref }}
-          release_name: Release ${{ github.ref }}
+          release_name: ${{ steps.version.outputs.version }}
           body: |
             Changes in this Release
             - First Change
