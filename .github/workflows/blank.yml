@@ -63,8 +63,8 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # This token is provided by Actions, you do not need to create your own token
         with:
-          tag_name: Tagv1
-          release_name: Release-v1
+          tag_name: ${{ steps.get_tag.outputs.tag }}
+          release_name: Release ${{ steps.get_tag.outputs.tag }}
           body: |
             Changes in this Release
             - First Change
@@ -76,7 +76,7 @@ jobs:
         uses: EndBug/latest-tag@latest
         with:
           # Default: 'latest'
-         tag-name: v1-fix
+         tag-name: v1.1-fix
          description: |
             description  in this Release
             - First Change
