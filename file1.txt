@@ -1,8 +1,3 @@
-Docoment
-==========
-
-# This is a basic workflow to help you get started with Actions
-
 # This is a basic workflow to help you get started with Actions
 
 name: CI
@@ -12,6 +7,8 @@ on:
   # Triggers the workflow on push or pull request events but only for the main branch
   push:
     branches: [ dev ]
+    tags-ignore:
+      - 'v*'    
   pull_request:
     branches: [ dev ]
     
@@ -68,8 +65,9 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # This token is provided by Actions, you do not need to create your own token
         with:
-          tag_name: Tagv1
-          release_name: Release-v1
+          allow_duplicate: true
+          tag_name: Stage-${{ github.ref }}
+          release_name: ${{ steps.version.outputs.version }}
           body: |
             Changes in this Release
             - First Change
@@ -81,9 +79,24 @@ jobs:
         uses: EndBug/latest-tag@latest
         with:
           # Default: 'latest'
-         tag-name: v1-fix
+         tag-name: v1.2-fix
          description: |
             description  in this Release
             - First Change
             - Second Change
     
+      - name: Create Release using github
+        id: create_release_github
+        uses: zendesk/action-create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: Tags-${{ github.ref }}
+          release_name: Releases- ${{ github.ref }}
+          body: |
+            Changes in this Release
+            - First Change
+            - Second Change
+          draft: false
+          prerelease: true
+          tag_schema: semantic
