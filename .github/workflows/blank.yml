@@ -37,3 +37,6 @@ jobs:
           
       - name: print list file
         run: ls
+      
+      - name: compress file
+        run: tar -czf "${{GITHUB_SHA}}".tar.gz --exclude=*.git --exclude=images *
