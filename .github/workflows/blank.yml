@@ -71,11 +71,11 @@ jobs:
           draft: false
           prerelease: false
 
-       - name: notify of failure
-         if: ${{ failure() }}  
-         run: echo Error Build
+      - name: notify of failure
+        if: ${{ failure() }}  
+        run: echo Error Build
 
-       - name: notify of success
-         if: ${{ success() }}
-         run: echo success Build App...
+      - name: notify of success
+        if: ${{ success() }}
+        run: echo success Build App...
           
