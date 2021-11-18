@@ -55,7 +55,7 @@ jobs:
 
      
       - name: Get version
-        run: echo ::set-env name=version::$(cat VERSION)
+        run: echo ::add-path name=version::$(cat VERSION)
 
       - name: Create release
         id: create_release
