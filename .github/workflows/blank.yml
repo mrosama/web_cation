@@ -56,8 +56,8 @@ jobs:
      
       - name: Get version
         run: echo ::set-env name=version::$(cat VERSION)
-
-     - name: Create release
+        
+      - name: Create release
        id: create_release
        uses: actions/create-release@v1
        env:
