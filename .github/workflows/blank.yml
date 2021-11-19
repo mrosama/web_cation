@@ -139,3 +139,9 @@ jobs:
          pr_body: ":crown: *An automated PR*"              # Full markdown support, requires pr_title to be set
          pr_allow_empty: true                              # Creates pull request even if there are no changes
          github_token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Upload Deployment Zip
+        uses: actions/upload-artifact@v2
+        with:
+         name: deployment_zip
+         path: ./lib/deploy.zip         
