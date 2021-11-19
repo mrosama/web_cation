@@ -70,3 +70,45 @@ jobs:
         uses: rtCamp/action-slack-notify@v2
         env:
          SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
+
+      - name: Notify if failure
+        if: ${{ failure() }}
+        run: |
+          curl -X POST -H 'Content-type: application/json' --data '{"text":"❌ {your-job-name-here} failed."}' ${{ secrets.SLACK_WEBHOOK_URL }}
+
+      - name: Notify if success
+        if: ${{ success() }}
+        run: |
+          curl -X POST -H 'Content-type: application/json' --data '{"text":"✅ {your-job-name-here} passed."}' ${{ secrets.SLACK_WEBHOOK_URL }}    
+
+      - name: Slack Incoming Webhook
+        if: ${{ success() }}
+        uses: tokorom/action-slack-incoming-webhook@main
+        env:
+         INCOMING_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+        with:
+         text: ":heavy_check_mark: Build success - Deploy - Server - TEST - Azure Web Apps CI/CD. :heavy_check_mark:"
+         attachments: |
+          [
+            {
+              "color": "good",
+              "fields": [
+                {
+                  "title": "Status",
+                  "value": "Success!"
+                },
+                {
+                  "title": "Stage",
+                  "value": "test"
+                },
+                {
+                  "title": "Application",
+                  "value": "Backend NodeJS Server"
+                },
+                {
+                  "title": "View Deploy Log",
+                  "value": "${{ github.event.repository.url }}/actions/runs/${{ github.run_id }}"
+                },
+              ]
+            }
+          ]  
