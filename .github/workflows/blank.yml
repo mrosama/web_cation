@@ -86,19 +86,9 @@ jobs:
          VERSION="v${MAJOR}.${MINOR}.${PATCH}"
          echo "::set-output name=version::${VERSION}"
 
-      - name: Create Github Release
-        id: create_release
-        uses: actions/create-release@v1
-        env:
-         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-        tag_name: ${{ needs.get_version.outputs.version }} 
-        release_name: ${{ needs.get_version.outputs.version }}
-        body: |
-          ${{ env.GITHUB_SHA }}
-        draft: false
-        prerelease: false  
-
+   
+      - name: print version file
+        run: echo ${{steps.get_version.outputs.version }}
 
 
  
