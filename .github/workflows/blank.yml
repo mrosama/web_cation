@@ -67,15 +67,4 @@ jobs:
       
   
 
-      - name: Version Composition
-        id: composer
-        uses: juliansangillo/version-composer@v1
-
-
-      - name: print version
-        run: |
-         echo v${{ steps.composer.outputs.version }} ,
-         echo  Release ${{ steps.composer.outputs.raw-version }}   
-  
-
  
