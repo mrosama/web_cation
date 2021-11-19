@@ -124,21 +124,21 @@ jobs:
        #  local-dir: ./our-awesome-theme/      
 
      
-      - name: Run the Action
-        uses: devops-infra/action-pull-request@v0.4.2
+      - name: extract git commit data
+        uses: rlespinasse/git-commit-data-action@v1.x
+
+      - name: Update author information
+        run: echo ${{ env.GIT_COMMIT_AUTHOR_NAME }} > AUTHOR
+
+      - name: Raise PR
+        uses: peter-evans/create-pull-request@v3
         with:
-         github_token: ${{ secrets.GITHUB_TOKEN }}
-         source_branch: dev
-         target_branch: release
-         title: My pull request
-       #  template: .github/PULL_REQUEST_TEMPLATE.md
-         body: "**Automated pull request**"
-         reviewer: octocat
-         assignee: octocat
-         label: enhancement
-         milestone: My milestone
-         draft: true
-         old_string: "<!-- Add your description here -->"
-         new_string: "** Automatic pull request**"
-         get_diff: true
-         ignore_users: "dependabot"
+          branch: "auto-pr-branch"
+          base: main
+          title: "demo for auto pr"
+          committer: ${{ env.GIT_COMMIT_AUTHOR_NAME }} <${{ env.GIT_COMMIT_AUTHOR_EMAIL }}">
+          author: ${{ env.GIT_COMMIT_AUTHOR_NAME }} <${{ env.GIT_COMMIT_AUTHOR_EMAIL }}">
+          body:
+            This is to show automatic PR creation
+          token: ${{ secrets.GITHUB_TOKEN }}
+          delete-branch: false
