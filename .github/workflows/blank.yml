@@ -82,10 +82,13 @@ jobs:
         run: echo ::set-output name=version::$(make version)
 
       - name: Get version
-        run: |
-         VERSION=$(cat version.txt)
-         echo "VERSION=$VERSION" >> $GITHUB_ENV
-         echo "Building $VERSION"  
+        id: get_version
+        run:  |
+         MAJOR=$(cat version.txt | cut -d . -f 1)
+         MINOR=$(cat version.txt | cut -d . -f 2)
+         PATCH=$(cat version.txt | cut -d . -f 3)
+         VERSION="v${MAJOR}.${MINOR}.${PATCH}"
+         echo "::set-output name=version::${VERSION}"
 
       - name: Create Github Release
         id: create_release
@@ -93,8 +96,8 @@ jobs:
         env:
          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-        tag_name: ${{ env.VERSION }}
-        release_name: ${{ env.VERSION }}
+        tag_name: ${{ needs.get_version.outputs.version }} 
+        release_name: ${{ needs.get_version.outputs.version }}
         body: |
           ${{ env.GITHUB_SHA }}
         draft: false
