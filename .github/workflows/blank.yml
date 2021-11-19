@@ -83,9 +83,9 @@ jobs:
 
       - name: Get version
         run: |
-        VERSION=$(cat ./version.txt)
-        echo "VERSION=$VERSION" >> $GITHUB_ENV
-        echo "Building $VERSION"  
+         VERSION=$(cat ./version.txt)
+         echo "VERSION=$VERSION" >> $GITHUB_ENV
+         echo "Building $VERSION"  
 
       - name: Create Github Release
         id: create_release
