@@ -62,9 +62,9 @@ jobs:
         run: ls
       
      
-     - name: Set variables
-      id: vars
-      run: echo ::set-output name=version::$(make version)
+      - name: Set variables
+        id: vars
+        run: echo ::set-output name=version::$(make version)
 
 
 
