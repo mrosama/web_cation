@@ -143,7 +143,7 @@ jobs:
       - name: Create Debloyment artifact
         env:
           GITHUB_SHA: ${{github.sha}}
-        run: tar -czf ./lib/${GITHUB_SHA}.tar.gz --exclude=*.git --exclude=images *
+        run: tar -czf ${GITHUB_SHA}.tar.gz --exclude=*.git --exclude=images *
          
          
       - name: Upload Deployment Zip
