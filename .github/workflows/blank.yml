@@ -129,13 +129,13 @@ jobs:
 
       - name: Update author information
         run: echo ${{ env.GIT_COMMIT_AUTHOR_NAME }} > AUTHOR
-        
+
       - name: pull-request
         uses: repo-sync/pull-request@v2
         with:
-        source_branch: "dev"                                 # If blank, default: triggered branch
-        destination_branch: "feature-1"                      # If blank, default: master
-        pr_title: "Pulling ${{ github.ref }} into master" # Title of pull request
-        pr_body: ":crown: *An automated PR*"              # Full markdown support, requires pr_title to be set
-        pr_allow_empty: true                              # Creates pull request even if there are no changes
-        github_token: ${{ secrets.GITHUB_TOKEN }}
+         source_branch: "dev"                                 # If blank, default: triggered branch
+         destination_branch: "feature-1"                      # If blank, default: master
+         pr_title: "Pulling ${{ github.ref }} into master" # Title of pull request
+         pr_body: ":crown: *An automated PR*"              # Full markdown support, requires pr_title to be set
+         pr_allow_empty: true                              # Creates pull request even if there are no changes
+         github_token: ${{ secrets.GITHUB_TOKEN }}
