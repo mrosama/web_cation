@@ -70,17 +70,16 @@ jobs:
       - name: Version Composition
         id: composer
         uses: juliansangillo/version-composer@v1
-        with:
-          revision-pattern: M.m.b.p
   
+
       - name: Create Release
         id: release
         uses: actions/create-release@v1
-        env:
+         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          tag_name: v${{ steps.composer.outputs.version }}
-          release_name: Release ${{ steps.composer.outputs.raw-version }}
-          draft: false
-          prerelease: ${{ steps.composer.outputs.is-prerelease == 'true' }}
+         tag_name: v${{ steps.composer.outputs.version }}
+         release_name: Release ${{ steps.composer.outputs.raw-version }}
+         draft: false
+         prerelease: ${{ steps.composer.outputs.is-prerelease == 'true' }}
 
