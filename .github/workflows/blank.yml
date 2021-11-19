@@ -70,16 +70,12 @@ jobs:
       - name: Version Composition
         id: composer
         uses: juliansangillo/version-composer@v1
+
+
+      - name: print version
+        run: |
+         echo v${{ steps.composer.outputs.version }} ,
+         echo  Release ${{ steps.composer.outputs.raw-version }}   
   
 
-      - name: Create Release
-        id: release
-        uses: actions/create-release@v1
-        env:
-         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-         tag_name: v${{ steps.composer.outputs.version }}
-         release_name: Release ${{ steps.composer.outputs.raw-version }}
-         draft: false
-         prerelease: ${{ steps.composer.outputs.is-prerelease == 'true' }}
-
+ 
