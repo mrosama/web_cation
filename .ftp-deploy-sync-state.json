@@ -1,0 +1,45 @@
+{
+    "description": "DO NOT DELETE THIS FILE. This file is used to keep track of which files have been synced in the most recent deployment. If you delete this file a resync will need to be done (which can take a while) - read more: https://github.com/SamKirkland/FTP-Deploy-Action",
+    "version": "1.0.0",
+    "generatedTime": 1637349144085,
+    "data": [
+        {
+            "type": "file",
+            "name": "file1.txt",
+            "size": 4942,
+            "hash": "037fc56423a9175cfa1ea77e7e230ffe1c09ebec08a40b1c3da873d422279f3b"
+        },
+        {
+            "type": "file",
+            "name": "file2.html",
+            "size": 5905,
+            "hash": "e0284dd4b684f7f6e6a2b7e37d0788e4bdce2741b4b0eebc3647a549b1a4cd59"
+        },
+        {
+            "type": "folder",
+            "name": "images"
+        },
+        {
+            "type": "folder",
+            "name": "lib"
+        },
+        {
+            "type": "file",
+            "name": "version.txt",
+            "size": 5,
+            "hash": "29b84080e3ce4875487fb325089c855214a8359ca6672e4e6c7b4245e2c8168b"
+        },
+        {
+            "type": "file",
+            "name": "images/4.0_7-Git-pull-update-local.png",
+            "size": 8876,
+            "hash": "eb85a899ca85100d35ead106af62532e7e3f15d27906c3a53df6b32a2e2254cd"
+        },
+        {
+            "type": "file",
+            "name": "lib/all.js",
+            "size": 19,
+            "hash": "90d776e518e46065cb70a9ae685779b66f348e085778a5a52cba655ff2a1fe55"
+        }
+    ]
+}
