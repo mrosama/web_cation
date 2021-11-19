@@ -65,6 +65,8 @@ jobs:
       - name: print list file
         run: ls
       
-  
 
- 
+      - name: Slack Notification
+        uses: rtCamp/action-slack-notify@v2
+        env:
+         SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
