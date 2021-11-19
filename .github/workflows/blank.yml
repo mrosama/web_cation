@@ -30,8 +30,8 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
      branch: ${{ steps.type.outputs.branch }}
-     modules: ${{ steps.vars.outputs.modules }}
-     version: ${{ steps.vars.outputs.version }}
+    # modules: ${{ steps.vars.outputs.modules }}
+   #  version: ${{ steps.vars.outputs.version }}
     env:
      DAY_OF_WEEK: Mon
     # Steps represent a sequence of tasks that will be executed as part of the job
