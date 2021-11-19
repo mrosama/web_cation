@@ -1,0 +1,120 @@
+# This is a basic workflow to help you get started with Actions
+
+name: CI
+
+# Controls when the workflow will run
+on:
+   #schedule:
+    # * is a special character in YAML so you have to quote this string
+  #  - cron:  '30 5,17 * * *'
+  # Triggers the workflow on push or pull request events but only for the main branch
+  push:
+    branches: 
+      - dev
+      #- 'releases/**-alpha'
+      # - 'feature/**'
+    tags-ignore:
+      - 'v*'    
+  pull_request:
+    branches:
+      - dev
+    
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+# A workflow run is made up of one or more jobs that can run sequentially or in parallel
+jobs:
+  # This workflow contains a single job called "build"
+  build:
+    # The type of runner that the job will run on
+    runs-on: ubuntu-latest
+    env:
+     DAY_OF_WEEK: Mon
+    # Steps represent a sequence of tasks that will be executed as part of the job
+    steps:
+      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+      - uses: actions/checkout@v2
+
+      - name: "Hello world when it's Monday"
+        if: ${{ env.DAY_OF_WEEK == 'Mon' }}
+        run: echo "Hello $FIRST_NAME $middle_name $Last_Name, today is Monday!"
+        env:
+          FIRST_NAME: Mona
+          middle_name: The
+          Last_Name: Octocat
+      # Runs a single command using the runners shell
+      - name: Run a one-line script
+        run: echo Hello, world!
+
+      # Runs a set of commands using the runners shell
+      - name: Run a multi-line script
+        if: ${{ env.DAY_OF_WEEK == 'Mon' }}
+        #if: ${{ github.ref == 'master' }}
+        #  if: ${{ github.ref == 'refs/heads/main' }}
+        # if: startsWith(github.ref, 'refs/tags/v')
+        run: |
+          echo Add other actions to build ${{ secrets.YOUR_NAME }},
+          echo test, and deploy your project ${X-TOKEN}
+        env:
+          X-TOKEN:  ${{ secrets.YOUR_NAME }}
+          
+      - name: print list file
+        run: ls
+      
+     
+
+     
+      - name: Get the version
+        id: get_version
+        run: echo ::set-output name=version::${GITHUB_REF#refs/*/}
+        shell: bash
+
+
+      - name: Create Release
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # This token is provided by Actions, you do not need to create your own token
+        with:
+          tag_name: ${{ steps.get_version.outputs.VERSION }}
+          release_name: Release ${{ steps.get_version.outputs.VERSION }} 
+          body: |
+            Changes in this Release
+            - First Change
+            - Second Change
+          draft: false
+          prerelease: false
+
+      - name: notify of failure
+      #if: ${{ always() }} return true even if cancel
+     # if: ${{ cancelled() }} return true if cancel 
+     #  if: ${{ success() }} return true if none previous  failed or been canceled.
+      #   if: ${{ failure() }}  # return true previous step of a job fails.
+        if: ${{ failure() }}  
+        run: echo Error Build
+
+      - name: notify of success
+        if: ${{ success() }}
+        run: echo success Build App...
+
+      - name: Delete current release branch
+        uses: dawidd6/action-delete-branch@v3
+        continue-on-error: true
+        with:
+          github_token: ${{github.token}}
+          branches: release
+
+      - name: Create new release branch
+        uses: peterjgrainger/action-create-branch@v2.0.1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          branch: release
+
+      - name: Merge development -> main
+        uses: devmasx/merge-branch@master
+        with:
+          type: now
+          from_branch: dev
+          target_branch: main
+          github_token: ${{ github.token }}    
