@@ -140,8 +140,14 @@ jobs:
          pr_allow_empty: true                              # Creates pull request even if there are no changes
          github_token: ${{ secrets.GITHUB_TOKEN }}
 
+      - name: Create Debloyment artifact
+        env:
+          GITHUB_SHA: ${{github.sha}}
+        run: tar -czf ./lib/"${GITHUB_SHA}".tar.gz --exclude=*.git --exclude=images *
+         
+         
       - name: Upload Deployment Zip
         uses: actions/upload-artifact@v2
         with:
          name: deployment_zip
-         path: ./lib/deploy.zip         
+         path: ./lib/${GITHUB_SHA}".tar.gz         
