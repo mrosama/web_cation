@@ -116,9 +116,9 @@ jobs:
       - name: FTP Deploy to WP Engine (Staging)
         uses: SamKirkland/FTP-Deploy-Action@4.1.0
         with:
-         ftp-server: ftp.byethost4.com
+         server: ftp.byethost4.com
         # port: 21
-         ftp-username: ${{ secrets.FTP_USER }}
-         ftp-password: ${{ secrets.FTP_PASSWORD }}
+         username: ${{ secrets.FTP_USER }}
+         password: ${{ secrets.FTP_PASSWORD }}
          server-dir : '/htdocs/'
        #  local-dir: ./our-awesome-theme/      
