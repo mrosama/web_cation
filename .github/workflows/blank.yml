@@ -65,46 +65,29 @@ jobs:
       - name: print list file
         run: ls
       
-      #- name: Set release type
-        #id: type
-        #run: |
-         # if [ "$REF" == "refs/heads/main" ]
-         # then
-          #    echo "::set-output name=branch::release"
-         # else
-        #      echo "::set-output name=branch::hotfix"
-       #   fi
-      #  env:
-     #     REF: ${{ github.ref }}  
-     
-      - name: Get version
-        id: get_version
-        run:  |
-         MAJOR=$(cat version.txt | cut -d . -f 1)
-         MINOR=$(cat version.txt | cut -d . -f 2)
-         PATCH=$(cat version.txt | cut -d . -f 3)
-         VERSION="v${MAJOR}.${MINOR}.${PATCH}"
-         echo "::set-output name=version::${VERSION}"
+  
 
-   
-      - name: print version file
-        run: echo ${{steps.get_version.outputs.version }}
+      - name: Version Composition
+        id: composer
+        uses: juliansangillo/version-composer@v1
+        with:
+          revision-pattern: M.m.b.p
+          preferred-type: patch
+          stable-branch: release
+          test-branch: uat
+          dev-branch: dev
+          stable-tag: STABLE
+          test-tag: TEST
+          dev-tag: null
 
       - name: Create Release
-        id: create_release
+        id: release
         uses: actions/create-release@v1
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # This token is provided by Actions, you do not need to create your own token
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          allow_duplicate: true
-          tag_name: ${{steps.get_version.outputs.version }}
-          release_name: Release - ${{steps.get_version.outputs.version }}
-          body: |
-            Changes in this Release
-            - First Change
-            - Second Change
+          tag_name: v${{ steps.composer.outputs.version }}
+          release_name: Release ${{ steps.composer.outputs.raw-version }}
           draft: false
-          prerelease: false    
+          prerelease: ${{ steps.composer.outputs.is-prerelease == 'true' }}
 
-
- 
