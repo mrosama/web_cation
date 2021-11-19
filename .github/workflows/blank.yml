@@ -151,3 +151,11 @@ jobs:
         with:
          name: deployment_zip
          path:  ./lib/${{github.sha}}.tar.gz
+
+      - name: Archive production artifacts
+        uses: actions/upload-artifact@v2
+        with:
+          name: dist-without-markdown
+          path: |
+            lib
+            !lib/**/*.md    
