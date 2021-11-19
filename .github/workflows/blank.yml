@@ -4,13 +4,19 @@ name: CI
 
 # Controls when the workflow will run
 on:
+   #schedule:
+    # * is a special character in YAML so you have to quote this string
+  #  - cron:  '30 5,17 * * *'
   # Triggers the workflow on push or pull request events but only for the main branch
   push:
-    branches: [ dev ]
+    branches: 
+      - dev
+      #- 'releases/**-alpha'
     tags-ignore:
       - 'v*'    
   pull_request:
-    branches: [ dev ]
+    branches:
+      - dev
     
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
@@ -28,6 +34,13 @@ jobs:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v2
 
+      - name: "Hello world when it's Monday"
+        if: ${{ env.DAY_OF_WEEK == 'Mon' }}
+        run: echo "Hello $FIRST_NAME $middle_name $Last_Name, today is Monday!"
+        env:
+          FIRST_NAME: Mona
+          middle_name: The
+          Last_Name: Octocat
       # Runs a single command using the runners shell
       - name: Run a one-line script
         run: echo Hello, world!
@@ -62,8 +75,8 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # This token is provided by Actions, you do not need to create your own token
         with:
-         # tag_name: ${{ steps.get_version.outputs.VERSION }}
-          release_name: Release ${{ steps.get_version.outputs.VERSION }}
+          tag_name: ${{ steps.get_version.outputs.VERSION }}
+          release_name: Release ${{ steps.get_version.outputs.VERSION }} 
           body: |
             Changes in this Release
             - First Change
@@ -72,10 +85,21 @@ jobs:
           prerelease: false
 
       - name: notify of failure
+      #if: ${{ always() }} return true even if cancel
+     # if: ${{ cancelled() }} return true if cancel 
+     #  if: ${{ success() }} return true if none previous  failed or been canceled.
+      #   if: ${{ failure() }}  # return true previous step of a job fails.
         if: ${{ failure() }}  
         run: echo Error Build
 
       - name: notify of success
         if: ${{ success() }}
         run: echo success Build App...
-          
+
+      - name: notify of success
+        uses: peterjgrainger/action-create-branch@v2.0.1
+        env:
+         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+        branch: 'release-notes'
+      
