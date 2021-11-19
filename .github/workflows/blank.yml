@@ -28,6 +28,10 @@ jobs:
   build:
     # The type of runner that the job will run on
     runs-on: ubuntu-latest
+    outputs:
+     branch: ${{ steps.type.outputs.branch }}
+     modules: ${{ steps.vars.outputs.modules }}
+     version: ${{ steps.vars.outputs.version }}
     env:
      DAY_OF_WEEK: Mon
     # Steps represent a sequence of tasks that will be executed as part of the job
@@ -61,10 +65,40 @@ jobs:
       - name: print list file
         run: ls
       
+      - name: Set release type
+        id: type
+        run: |
+          if [ "$REF" == "refs/heads/main" ]
+          then
+              echo "::set-output name=branch::release"
+          else
+              echo "::set-output name=branch::hotfix"
+          fi
+        env:
+          REF: ${{ github.ref }}  
      
       - name: Set variables
         id: vars
         run: echo ::set-output name=version::$(make version)
+
+      - name: Get version
+        run: |
+        VERSION=$(cat ./version.txt)
+        echo "VERSION=$VERSION" >> $GITHUB_ENV
+        echo "Building $VERSION"  
+
+      - name: Create Github Release
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+        tag_name: ${{ env.VERSION }}
+        release_name: ${{ env.VERSION }}
+        body: |
+          ${{ env.GITHUB_SHA }}
+        draft: false
+        prerelease: false  
 
 
 
