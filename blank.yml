@@ -1,0 +1,161 @@
+# This is a basic workflow to help you get started with Actions
+
+name: CICD
+
+# Controls when the workflow will run
+on:
+   #schedule:
+    # * is a special character in YAML so you have to quote this string
+  #  - cron:  '30 5,17 * * *'
+  # Triggers the workflow on push or pull request events but only for the main branch
+  push:
+    branches: 
+      - dev
+      #- 'releases/**-alpha'
+      # - 'feature/**'
+    tags-ignore:
+      - 'v*'    
+  pull_request:
+    branches:
+      - dev
+    
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+# A workflow run is made up of one or more jobs that can run sequentially or in parallel
+jobs:
+  # This workflow contains a single job called "build"
+  build:
+    # The type of runner that the job will run on
+    runs-on: ubuntu-latest
+    outputs:
+     branch: ${{ steps.type.outputs.branch }}
+    # modules: ${{ steps.vars.outputs.modules }}
+   #  version: ${{ steps.vars.outputs.version }}
+    env:
+     DAY_OF_WEEK: Mon
+    # Steps represent a sequence of tasks that will be executed as part of the job
+    steps:
+      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+      - uses: actions/checkout@v2
+
+      - name: "Hello world when it's Monday"
+        if: ${{ env.DAY_OF_WEEK == 'Mon' }}
+        run: echo "Hello $FIRST_NAME $middle_name $Last_Name, today is Monday!"
+        env:
+          FIRST_NAME: Mona
+          middle_name: The
+          Last_Name: Octocat
+      # Runs a single command using the runners shell
+      - name: Run a one-line script
+        run: echo Hello, world!
+
+      # Runs a set of commands using the runners shell
+      - name: Run a multi-line script
+        if: ${{ env.DAY_OF_WEEK == 'Mon' }}
+        #if: ${{ github.ref == 'master' }}
+        #  if: ${{ github.ref == 'refs/heads/main' }}
+        # if: startsWith(github.ref, 'refs/tags/v')
+        run: |
+          echo Add other actions to build ${{ secrets.YOUR_NAME }},
+          echo test, and deploy your project ${X-TOKEN}
+        env:
+          X-TOKEN:  ${{ secrets.YOUR_NAME }}
+          
+      - name: print list file
+        run: ls
+      
+
+      - name: Slack Notification
+        uses: rtCamp/action-slack-notify@v2
+        env:
+         SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
+
+      - name: Notify if failure
+        if: ${{ failure() }}
+        run: |
+          curl -X POST -H 'Content-type: application/json' --data '{"text":"❌ {your-job-name-here} failed."}' ${{ secrets.SLACK_WEBHOOK }}
+
+      - name: Notify if success
+        if: ${{ success() }}
+        run: |
+          curl -X POST -H 'Content-type: application/json' --data '{"text":"✅ {your-job-name-here} passed."}' ${{ secrets.SLACK_WEBHOOK }}    
+
+      - name: Slack Incoming Webhook
+        if: ${{ success() }}
+        uses: tokorom/action-slack-incoming-webhook@main
+        env:
+         INCOMING_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK }}
+        with:
+         text: ":heavy_check_mark: Build success - Deploy - Server - TEST - Azure Web Apps CI/CD. :heavy_check_mark:"
+         attachments: |
+          [
+            {
+              "color": "good",
+              "fields": [
+                {
+                  "title": "Status",
+                  "value": "Success!"
+                },
+                {
+                  "title": "Stage",
+                  "value": "test"
+                },
+                {
+                  "title": "Application",
+                  "value": "Backend NodeJS Server"
+                },
+                {
+                  "title": "View Deploy Log",
+                  "value": "${{ github.event.repository.url }}/actions/runs/${{ github.run_id }}"
+                },
+              ]
+            }
+          ]  
+
+      - name: FTP Deploy to WP Engine (Staging)
+        uses: SamKirkland/FTP-Deploy-Action@4.1.0
+        with:
+         server: ftp.byethost4.com
+        # port: 21
+         username: ${{ secrets.FTP_USER }}
+         password: ${{ secrets.FTP_PASSWORD }}
+         server-dir : '/htdocs/'
+       #  local-dir: ./our-awesome-theme/      
+
+     
+      - name: extract git commit data
+        uses: rlespinasse/git-commit-data-action@v1.x
+
+      - name: Update author information
+        run: echo ${{ env.GIT_COMMIT_AUTHOR_NAME }} > AUTHOR
+
+      - name: pull-request
+        uses: repo-sync/pull-request@v2
+        with:
+         source_branch: "dev"                                 # If blank, default: triggered branch
+         destination_branch: "main"                      # If blank, default: master
+         pr_title: "Pulling ${{ github.ref }} into master" # Title of pull request
+         pr_body: ":crown: *An automated PR*"              # Full markdown support, requires pr_title to be set
+         pr_allow_empty: true                              # Creates pull request even if there are no changes
+         github_token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Create Debloyment artifact
+        env:
+          GITHUB_SHA: ${{github.sha}}
+        run: tar -czf ./lib/"${GITHUB_SHA}".tar.gz --exclude=*.git --exclude=images *
+         
+         
+      - name: Upload Deployment Zip
+        uses: actions/upload-artifact@v2
+        with:
+         name: deployment_zip
+         path:  ./lib/${{github.sha}}.tar.gz
+
+      - name: Archive production artifacts
+        uses: actions/upload-artifact@v2
+        with:
+          name: dist-without-markdown
+          path: |
+            lib
+            !lib/**/*.md    

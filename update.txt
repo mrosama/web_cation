@@ -1,0 +1,138 @@
+  job_2:
+    name: Multiply by 9
+    needs: job_1
+    runs-on: windows-latest
+    steps:
+      - name: Download math result for job 1
+        uses: actions/download-artifact@v2
+        with:
+          name: homework
+      - shell: bash
+
+
+
+
+  =====================
+
+
+  name: Staging Deploy
+
+on:
+  push:
+    branches: [ master ]
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        shell: bash
+        working-directory: ./themes/our-awesome-theme
+    steps:
+    - uses: actions/checkout@v2
+      with:
+        fetch-depth: 2
+
+    - name: Install Composer Dependencies
+      run: composer install --prefer-dist --no-progress --no-suggest
+
+    - name: npm install
+      run: npm install
+
+    - name: npm run bundle
+      run: npm run bundle
+
+    - name: FTP Deploy to WP Engine (Staging)
+      uses: SamKirkland/FTP-Deploy-Action@3.1.1
+      with:
+        ftp-server: sftp://stagingawesometheme.sftp.wpengine.com:2222/
+        ftp-username: staginguser-deploy
+        ftp-password: ${{ secrets.STAGING_FTP_PASSWORD }}
+        local-dir: ./our-awesome-theme/
+
+
+
+
+--------------------------------
+
+    # If PR was closed, but not merged
+    if: contains(github.event.pull_request.labels.*.name, 'release') && github.event.pull_request.merged == false && github.event.pull_request.head.ref == 'release'
+
+  if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/hotfix'
+
+name: CI
+on: push
+jobs:
+  prod-check:
+    if: ${{ github.ref == 'refs/heads/main' }}
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo "Deploying to production server on branch $GITHUB_REF"
+
+
+--------------------------------------------
+
+jobs:
+  setup:
+    runs-on: ubuntu-latest
+    steps:
+      - run: ./setup_server.sh
+  build:
+    needs: setup
+    runs-on: ubuntu-latest
+    steps:
+      - run: ./build_server.sh
+  test:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - run: ./test_server.sh
+
+-----------------------
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node: [6, 8, 10]
+    steps:
+      - uses: actions/setup-node@v2
+        with:
+          node-version: ${{ matrix.node }}
+
+
+==============================
+
+on:
+  push:
+    branches:
+      - '*'
+      - '!master'
+
+      - name: Publish Image
+  # Develop branch only
+  if: github.ref == 'refs/heads/develop'
+  run: |
+    ... publish commands ...
+
+ ====================
+
+ if: contains(github.base_ref, 'staging')
+  || contains(github.base_ref, 'production')
+
+  if:
+      contains('
+        refs/heads/staging
+        refs/heads/production
+      ', github.ref)   
+
+
+startsWith(github.ref, 'refs/tags/')
+
+
+
+
+
+
+
+
